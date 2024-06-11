@@ -1,5 +1,3 @@
-import { routes } from './routes.js'; // Importar las rutas desde el archivo routes.js
-
 let map;
 let userLocation = { lat: 23.2319822, lng: -106.4228887 }; // Ubicación inicial predeterminada
 let userMarker;
@@ -7,6 +5,7 @@ let activePolyline;
 let remainingPathGlobal = []; // Ruta restante
 let userToNextPointPolyline; // Línea del usuario al siguiente punto
 let uasPolygon; // Polígono del campus
+import { routes } from './routes.js';
 
 const entrances = [
     { lat: 23.231975879019632, lng: -106.42292258616281, name: "Entrada 1" },
@@ -29,6 +28,7 @@ const destinations = {
     Ingenieria: { lat: 23.232296, lng: -106.423790, name: "Ingeniería" },
     Educacion: { lat: 23.232166, lng: -106.425461, name: "Educación" }
 };
+
 
 let selectedDestination = null; // Variable para almacenar el destino seleccionado
 
@@ -121,10 +121,10 @@ function initMap() {
 function trackUserLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
-            function(position) {
+            function (position) {
                 updateUserLocation(position.coords.latitude, position.coords.longitude);
             },
-            function() {
+            function () {
                 handleLocationError(true, map.getCenter());
             },
             {
@@ -349,7 +349,7 @@ function updateRoute(currentLocation) {
 
 function isUserInsideCampus(userLocation, campusPolygon) {
     return google.maps.geometry.poly.containsLocation(
-        new google.maps.LatLng(userLocation.lat, userLocation.lng), 
+        new google.maps.LatLng(userLocation.lat, userLocation.lng),
         campusPolygon
     );
 }
