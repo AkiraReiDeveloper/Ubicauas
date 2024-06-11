@@ -1,9 +1,3 @@
-
-
-
-
-
-
 let map;
 let userLocation = { lat: 23.2319822, lng: -106.4228887 }; // Ubicación inicial predeterminada
 let userMarker;
@@ -919,6 +913,8 @@ const routes = [
 
 ];
 
+let selectedDestination = null; // Variable para almacenar el destino seleccionado
+
 function initMap() {
     const campusCenter = { lat: 23.2319822, lng: -106.425 }; // Centro aproximado del campus
 
@@ -957,6 +953,14 @@ function initMap() {
         title: "Ubicación Actual"
     });
 
+    google.maps.event.addListener(userMarker, 'dragend', function (evt) {
+        userLocation = {
+            lat: evt.latLng.lat(),
+            lng: evt.latLng.lng()
+        };
+        updateFastestRoute(); // Llamada a la actualización de la ruta al mover el marcador
+    });
+
     entrances.forEach((entrance) => {
         new google.maps.Marker({
             position: entrance,
@@ -983,7 +987,8 @@ function initMap() {
         });
 
         destinationMarker.addListener('click', () => {
-            updateFastestRoute(name);
+            selectedDestination = name; // Almacenar el destino seleccionado
+            updateFastestRoute(); // Llamada a la actualización de la ruta al hacer clic en el marcador de destino
         });
     });
 
@@ -1026,7 +1031,7 @@ function updateUserLocation(lat, lng) {
     if (autoCenterEnabled) {
         map.setCenter(userLocation);
     }
-    // No llamamos a updateFastestRoute aquí para evitar dibujar rutas automáticamente
+    updateFastestRoute(); // Llamar a la función para actualizar la ruta cuando la ubicación del usuario cambie
 }
 
 function drawStaticRoutes() {
@@ -1131,8 +1136,8 @@ function drawFastestRoute(destinationName) {
     }
 }
 
-function updateFastestRoute(destinationName) {
-    if (destinationName !== 'UAGYNM') return; // Solo actualizar ruta si el destino es UAGYNM
+function updateFastestRoute() {
+    if (!selectedDestination || selectedDestination !== 'UAGYNM') return; // Solo actualizar ruta si el destino es UAGYNM
 
     if (!isUserInsideCampus(userLocation, uasPolygon)) {
         const closestEntrance = findClosestEntrance(userLocation);
@@ -1160,7 +1165,7 @@ function updateFastestRoute(destinationName) {
         userLocation = { lat: closestEntrance.lat, lng: closestEntrance.lng };
     }
 
-    drawFastestRoute(destinationName); // Actualizar la ruta más rápida hacia UAGYNM
+    drawFastestRoute(selectedDestination); // Actualizar la ruta más rápida hacia UAGYNM
 }
 
 function updateRoute(currentLocation) {
