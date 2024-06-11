@@ -20,7 +20,18 @@ const entrances = [
 ];
 
 const destinations = {
-    UAGYNM: { lat: 23.2313054059438, lng: -106.42617273640757, name: "UAGYNM" }
+    UAGYNM: { lat: 23.2313054059438, lng: -106.42617273640757, name: "UAGYNM" },
+    FIMAZ: { lat: 23.231358, lng: -106.426643, name: "FIMAZ" },
+    CentroIdiomas: { lat: 23.231829, lng: -106.426720, name: "Centro de Idiomas" },
+    Turismo: { lat: 23.232277, lng: -106.426590, name: "Turismo" },
+    Derecho: { lat: 23.232426, lng: -106.425873, name: "Derecho" },
+    CienciasSociales: { lat: 23.232874, lng: -106.425827, name: "Ciencias Sociales" },
+    TrabajoSocial: { lat: 23.232441, lng: -106.424774, name: "Trabajo Social" },
+    Enfermeria: { lat: 23.231751, lng: -106.425453, name: "Enfermería" },
+    FACEAM: { lat: 23.231878, lng: -106.424721, name: "FACEAM" },
+    Arquitectura: { lat: 23.232168, lng: -106.424080, name: "Arquitectura" },
+    Ingenieria: { lat: 23.232296, lng: -106.423790, name: "Ingeniería" },
+    Educacion: { lat: 23.232166, lng: -106.425461, name: "Educación" }
 };
 
 const routes = [
