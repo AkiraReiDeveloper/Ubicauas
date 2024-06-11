@@ -1,3 +1,9 @@
+
+
+
+
+
+
 let map;
 let userLocation = { lat: 23.2319822, lng: -106.4228887 }; // Ubicación inicial predeterminada
 let userMarker;
@@ -902,10 +908,11 @@ const routes = [
 
 ];
 
-
 function initMap() {
+    const campusCenter = { lat: 23.2319822, lng: -106.425 }; // Centro aproximado del campus
+
     map = new google.maps.Map(document.getElementById('map'), {
-        center: userLocation,
+        center: campusCenter,
         zoom: 17
     });
 
@@ -935,16 +942,8 @@ function initMap() {
     userMarker = new google.maps.Marker({
         position: userLocation,
         map: map,
-        draggable: true,
+        draggable: false, // Cambio aquí
         title: "Ubicación Actual"
-    });
-
-    google.maps.event.addListener(userMarker, 'dragend', function (evt) {
-        userLocation = {
-            lat: evt.latLng.lat(),
-            lng: evt.latLng.lng()
-        };
-        updateFastestRoute();
     });
 
     entrances.forEach((entrance) => {
@@ -973,39 +972,44 @@ function initMap() {
         });
 
         destinationMarker.addListener('click', () => {
-            drawFastestRoute(name);
+            updateFastestRoute(name);
         });
     });
- getCurrentLocation(); 
-    drawStaticRoutes(); // Dibuja las rutas estáticas
-    displayDistances(); // Muestra las distancias de las rutas
-    updateFastestRoute(); // Actualizar la ruta más rápida al cargar el mapa
-   
 
+    trackUserLocation();
+    drawStaticRoutes(); // Dibuja las rutas estáticas en verde
+    displayDistances(); // Muestra las distancias de las rutas
 }
 
-
-
-function getCurrentLocation() {
+function trackUserLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
+        navigator.geolocation.watchPosition(
             function(position) {
-                userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                userMarker.setPosition(userLocation);
-                map.setCenter(userLocation);
-                updateFastestRoute();
+                updateUserLocation(position.coords.latitude, position.coords.longitude);
             },
             function() {
                 handleLocationError(true, map.getCenter());
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000
             }
         );
     } else {
         // Browser doesn't support Geolocation
         handleLocationError(false, map.getCenter());
     }
+}
+
+function updateUserLocation(lat, lng) {
+    userLocation = {
+        lat: lat,
+        lng: lng
+    };
+    userMarker.setPosition(userLocation);
+    map.setCenter(userLocation);
+    // No llamamos a updateFastestRoute aquí para evitar dibujar rutas automáticamente
 }
 
 function drawStaticRoutes() {
@@ -1020,7 +1024,7 @@ function drawStaticRoutes() {
                     path: google.maps.SymbolPath.CIRCLE,
                     scale: 4,
                     fillColor: '#00FF00',
-                    fillOpacity: 0.7, // Relleno más claro
+                    fillOpacity: 0, // Relleno más claro
                     strokeColor: '#00FF00',
                     strokeWeight: 1
                 },
@@ -1054,6 +1058,8 @@ function displayDistances() {
 }
 
 function drawFastestRoute(destinationName) {
+    if (destinationName !== 'UAGYNM') return; // Solo dibujar ruta si el destino es UAGYNM
+
     let minDistance = Infinity;
     let bestPath = null;
     let closestPointIndex = 0;
@@ -1107,7 +1113,9 @@ function drawFastestRoute(destinationName) {
     }
 }
 
-function updateFastestRoute() {
+function updateFastestRoute(destinationName) {
+    if (destinationName !== 'UAGYNM') return; // Solo actualizar ruta si el destino es UAGYNM
+
     if (!isUserInsideCampus(userLocation, uasPolygon)) {
         const closestEntrance = findClosestEntrance(userLocation);
 
@@ -1134,7 +1142,7 @@ function updateFastestRoute() {
         userLocation = { lat: closestEntrance.lat, lng: closestEntrance.lng };
     }
 
-    drawFastestRoute('UAGYNM'); // Actualizar la ruta más rápida hacia UAGYNM
+    drawFastestRoute(destinationName); // Actualizar la ruta más rápida hacia UAGYNM
 }
 
 function updateRoute(currentLocation) {
@@ -1183,7 +1191,7 @@ function updateRoute(currentLocation) {
                     path: google.maps.SymbolPath.CIRCLE,
                     scale: 4,
                     fillColor: '#00FF00',
-                    fillOpacity: 0.7, // Relleno más claro
+                    fillOpacity: 0, // Relleno más claro
                     strokeColor: '#00FF00',
                     strokeWeight: 1
                 },
@@ -1232,4 +1240,3 @@ function handleLocationError(browserHasGeolocation, pos) {
 }
 
 window.onload = initMap;
-
