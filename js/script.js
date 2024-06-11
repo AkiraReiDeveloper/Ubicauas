@@ -66,7 +66,7 @@ function initMap() {
     userMarker = new google.maps.Marker({
         position: userLocation,
         map: map,
-        draggable: true, // Cambio aquí
+        draggable: false, // Cambio aquí
         title: "Ubicación Actual"
     });
 
