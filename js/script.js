@@ -976,6 +976,10 @@ function initMap() {
         });
     });
 
+    map.addListener('dragstart', () => {
+        autoCenterEnabled = false; // Deshabilitar el centrado automático al arrastrar el mapa
+    });
+
     trackUserLocation();
     drawStaticRoutes(); // Dibuja las rutas estáticas en verde
     displayDistances(); // Muestra las distancias de las rutas
@@ -1008,7 +1012,9 @@ function updateUserLocation(lat, lng) {
         lng: lng
     };
     userMarker.setPosition(userLocation);
-    map.setCenter(userLocation);
+    if (autoCenterEnabled) {
+        map.setCenter(userLocation);
+    }
     // No llamamos a updateFastestRoute aquí para evitar dibujar rutas automáticamente
 }
 
@@ -1091,7 +1097,8 @@ function drawFastestRoute(destinationName) {
             path: remainingPath,
             geodesic: true,
             strokeColor: '#0000FF',
-            strokeOpacity: 0,
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
             icons: [{
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
